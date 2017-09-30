@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.js"></script>
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<style>
+body {
+    background-color: #3949ab;
+    font-family: Helvetica, sans-serif;
+    font-size: 18px;
+    color: #272727;
+}
+
+ul {
+    list-style: none;
+    width: 240px;
+    margin: 100px auto 0;
+    background-color: #fff;
+    padding: 6px 0;
+    border-radius: 2px;
+}
+
+li {
+    display: block;
+    padding: 20px 30px;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+.strike {
+    text-decoration: line-through;
+    color: #aaa;
+}
+
+#sque {padding:100px; background-color:#ff0040}
+
+
+header{
+    width:100%;
+    height: 56px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 80;
+    background-color: #fff;
+    box-shadow: 2px 2px 5px 0 rgba(0,0,0,0.095);
+    padding: 8px 16px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+aside {
+    background-color: #fff;
+    width: 250px;
+    position: fixed;
+    top: 55px;
+    left: 0;
+    bottom: 0px;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+aside h2{
+    font-weight: 300;
+    color: #afafaf;
+}
+
+button {
+    background: transparent;
+    border: 0;
+    width: 40px;
+    height: 40px;
+    font-size: 30px;
+    outline: none;
+    color: #9f9f9f;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all .3s ease-in-out;
+}
+button:active {
+    background-color: rgba(0,0,0,0.1);
+}
+/*
+.slide-transition {
+    transition: all .3s cubic-bezier(.65, .05, .36, 1);
+}
+
+.slide-enter, .slide-leave {
+    left: -100%;
+}﻿ */
+
+
+
+
+.fade-leave-active {
+     transform: translateX(-250px);
+    transition: all 0.3s cubic-bezier(.65, .05, .36, 1);
+}
+
+.fade-enter-active {
+      transform: translateX(-250px);
+    transition: all 0.3s cubic-bezier(.65, .05, .36, 1);
+}
+
+.fade-enter-to {
+    transform: translateX(0px);
+   
+}
+
+/* Dialog */
+.Dialog__overlay {
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.Dialog__content {
+    position: fixed;
+    z-index: 13;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    text-align: center;
+    border-radius: 2px;
+    width: 70%;
+    max-width: 250px;
+}
+
+.Dialog__body {
+    padding: 20px;
+    font-size: 15px;
+    color: #4a4a4a;
+    word-wrap: break-word;
+    word-break: break-all;
+    font-weight: 500;
+}
+
+.Dialog__footer {
+    position: relative;
+    line-height: 42px;
+    font-size: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    white-space: nowrap;
+    width: 100%;
+    height: 40px;
+}
+
+.Dialog__footer:after {
+    content: " ";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 1px;
+    border-top: 1px solid #D5D5D6;
+    color: #D5D5D6;
+    transform-origin: 0 0;
+    transform: scaleY(0.5);
+}
+
+.btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    flex: 1;
+    border-left: 1px solid #D5D5D6 !important;
+    font-size: 1rem;
+    line-height: 30px;
+    display: inline-block;
+    height: 32px;
+    padding: 0 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: transparent;
+    color: #0179f1;
+    border-radius: 3px;
+    outline: 0;
+    vertical-align: middle;
+    transition: box-shadow .1s ease-out,background-color .1s ease-out, border-color .1s ease-out, color .1s ease-out;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.btn-ok {
+    font-weight: 500;
+}
+
+.btn:active {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.btn:first-child {
+    border-bottom-left-radius: 2px;
+    border-left: none !important;
+}
+
+.link {
+    color: #08c;
+    font-size: 16px;
+    display: inline-block;
+    text-decoration: none;
+    border-bottom: 2px dotted;
+    margin-right: 5px;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <template id="dialog-template">
+        <div>
+            <div class="Dialog" v-show="active">
+                <div class="Dialog__overlay" @click="close()"></div>
+                <div class="Dialog__content">
+                    <div class="Dialog__body">
+                        <slot></slot>
+                    </div>
+                    <div class="Dialog__footer">
+                        <button class="btn" @click="onCancel()">Отмена</button>
+                        <button class="btn btn-ok" @click="onConfirm()">{{ btnText }}</button>
+                    </div>
+                </div>
+            </div>
+
+            <a class="link" href="#" @click="open()">ссылка</a>
+        </div>
+    </template>
+
+						<h1>Hello {{message}}</h1>
+						<input type="text" v-model="message"  v-on:keyup.13="onClick"  >
+
+						<hr>
+						<ul>
+							<li v-for="bear in FilteredBears" v-bind:class="{ 'strike':bear.status }" >{{bear.name.toUpperCase() }}</li>
+						</ul>
+						<hr>
+<header>
+<button v-on:click="show = !show" >  <i class="ion-navicon"></i></button>
+</header>
+
+<hr>
+
+
+
+<form>
+
+<span> {{ count }}/30</span>
+<textarea v-model="text"></textarea>
+<button v-if="count <= 30" ><i class="ion-paper-airplane" ></i></button>
+
+ </form>
+<hr>
+
+ <transition name="fade">
+<aside v-if="show"  >
+<ul>
+<li>
+   <v-dialog btn-text="Согласен">Вопрос 1</v-dialog>
+   <v-dialog btn-text="Хорошо">Вопрос 2</v-dialog>
+</li>
+</aside>
+ </transition>
+ 
+</div>
+<script>
+Vue.component('v-dialog', {
+    template: '#dialog-template',
+	data: function(){
+		return {
+			active: false
+		}
+	},
+	props: ['btnText'],
+	methods: {
+	    open: function() {
+         this.active = true
+        },
+         close: function() {
+         this.active = false
+         },
+         onCancel: function() {
+         this.close();
+         },
+         onConfirm: function() {
+         this.close();
+         }
+}
+	
+}
+
+)
+
+new Vue ({
+el: "#app",
+data: {
+    show: true,
+	message : '',
+	text : '',
+		bears : [
+		   {
+		   name: 'гризли',
+		   age: 20,
+		   status: true
+		   },
+		    {
+		   name: 'михалыч',
+		   age: 1,
+		   status: false
+		   },
+		    {
+		   name: 'белый',
+		   age: 23,
+		   status: true
+		   },
+		    {
+		   name: 'черный',
+		   age: 5,
+		   status: false
+		   }
+		]
+},
+computed: {
+ count: function() {
+   return this.text.length
+ },
+
+  FilteredBears: function () {
+    var self = this
+    return self.bears.filter(function (bear) {
+      return bear.age <= 99
+    })
+  }
+},
+methods: {
+		onClick: function() {
+		console.log(this.message)
+		},
+	    open: function() {
+         this.active = true
+        },
+         close: function() {
+         this.active = false
+         },
+         onCancel: function() {
+         this.close();
+         },
+         onConfirm: function() {
+         this.close();
+         }
+}
+})
+
+</script>
+</body>
+</html>
